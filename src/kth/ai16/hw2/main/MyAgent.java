@@ -14,7 +14,6 @@ public class MyAgent {
      */
     public GameState play(final GameState gameState, final Deadline deadline) {
         Vector<GameState> nextStates = new Vector<GameState>();
-        int[] values = new int[nextStates.size()];
         gameState.findPossibleMoves(nextStates);
 
         if (nextStates.size() == 0) {
@@ -22,6 +21,7 @@ public class MyAgent {
             return new GameState(gameState, new Move());
         }
         
+        int[] values = new int[nextStates.size()];
         for (int i = 0; i < nextStates.size(); i++){
         	values[i] = minimax(nextStates.elementAt(i), true);
         }
