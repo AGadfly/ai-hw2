@@ -1,4 +1,4 @@
-package kth.ai16.hw2.main;
+package main;
 /**
  * Contains all the constants needed among all classes.
  */

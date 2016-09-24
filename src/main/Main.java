@@ -1,4 +1,4 @@
-package kth.ai16.hw2.main;
+package main;
 
 import java.io.BufferedReader;
 import java.io.IOException;

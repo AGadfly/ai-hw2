@@ -1,4 +1,4 @@
-package kth.ai16.hw2.main;
+package main;
 
 import java.util.StringTokenizer;
 import java.util.Vector;

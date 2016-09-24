@@ -1,4 +1,4 @@
-package kth.ai16.hw2.main;
+package main;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
