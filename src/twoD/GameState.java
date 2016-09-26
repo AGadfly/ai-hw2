@@ -1,4 +1,4 @@
-package main;
+package twoD;
 
 import java.util.StringTokenizer;
 import java.util.Vector;

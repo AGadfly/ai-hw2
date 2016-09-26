@@ -1,4 +1,4 @@
-package main;
+package twoD;
 /**
  * Contains all the constants needed among all classes.
  */

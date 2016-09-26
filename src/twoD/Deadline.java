@@ -1,4 +1,4 @@
-package main;
+package twoD;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;

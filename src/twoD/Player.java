@@ -1,5 +1,4 @@
-package main;
-
+package twoD;
 import java.util.*;
 
 public class Player {
@@ -23,7 +22,7 @@ public class Player {
         
         int[] values = new int[nextStates.size()];
         for (int i = 0; i < nextStates.size(); i++){
-        	values[i] = minimax(nextStates.elementAt(i), true, Integer.MIN_VALUE, Integer.MAX_VALUE, 4);
+        	values[i] = minimax(nextStates.elementAt(i), true, Integer.MIN_VALUE, Integer.MAX_VALUE, 6, deadline);
         }
         
         /**
@@ -48,7 +47,7 @@ public class Player {
     	
     	
     
-    	private int minimax (GameState state, boolean player, int alpha, int beta, int depth){
+    	private int minimax (GameState state, boolean player, int alpha, int beta, int depth, Deadline dead){
     		//recursion termination
     		
     		if(depth == 0 && !(state.isEOG())){
@@ -56,9 +55,9 @@ public class Player {
     		}
     		if(state.isEOG()){
     			if(state.isXWin()){
-    				return 1;
+    				return 1000;
     			} else if(state.isOWin()){
-    				return -1;
+    				return -1000;
     			} else {
     				return 0;
     			}	
@@ -73,7 +72,7 @@ public class Player {
     		        Vector<GameState> nextStates = new Vector<GameState>();
     		        state.findPossibleMoves(nextStates);
     				for (GameState child : nextStates){
-    					bestPossible = Math.max(bestPossible, minimax(child, false, alpha, beta, depth - 1));
+    					bestPossible = Math.max(bestPossible, minimax(child, false, alpha, beta, depth - 1, dead));
     					alpha = Math.max(alpha, bestPossible);
     					if(beta <= alpha){
     						break;
@@ -87,7 +86,7 @@ public class Player {
     		        Vector<GameState> nextStates = new Vector<GameState>();
     		        state.findPossibleMoves(nextStates);
     				for (GameState child : nextStates){
-    					bestPossible = Math.min(bestPossible, minimax(child, true, alpha, beta, depth - 1));
+    					bestPossible = Math.min(bestPossible, minimax(child, true, alpha, beta, depth - 1, dead));
     					beta = Math.min(beta, bestPossible);
     					if(beta<=alpha){
     						break;
@@ -220,7 +219,7 @@ public class Player {
     			} else if(o == 1 && x == 0){
     				score -= 1;
     			}
-    			
+    			/*
     				if(score > 0) {
     					return 1;
     				}
@@ -230,6 +229,7 @@ public class Player {
     				else {
     					return 0;
     				}
-    			
+    			*/
+    			return score;
         	}
     }
