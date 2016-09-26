@@ -20,7 +20,7 @@ public class Player {
         
         int[] values = new int[nextStates.size()];
         for (int i = 0; i < nextStates.size(); i++){
-        	values[i] = minimax(nextStates.elementAt(i), true, Integer.MIN_VALUE, Integer.MAX_VALUE, 6, deadline);
+        	values[i] = minimax(nextStates.elementAt(i), true, Integer.MIN_VALUE, Integer.MAX_VALUE, 3, deadline);
         }
         // return next best move -> move with max heuristic value
         return nextStates.elementAt(Util.getMaxIndex(values));
@@ -44,11 +44,11 @@ public class Player {
 		}
 		if(state.isEOG()){ // guard clause for win
 			if(state.isXWin()){
-				return 1000;
+				return 10000;
 			} else if(state.isOWin()){
-				return -1000;
+				return -10000;
 			} else {
-				return 0;
+				return 500;
 			}	
 		}
 		//find beste possible next move
