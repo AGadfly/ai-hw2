@@ -1,5 +1,4 @@
-package twoD;
-
+package ticTacToe3D;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 

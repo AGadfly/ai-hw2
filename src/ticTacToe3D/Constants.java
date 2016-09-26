@@ -1,4 +1,4 @@
-package threeD;
+package ticTacToe3D;
 /**
  * Contains all the constants needed among all classes.
  */

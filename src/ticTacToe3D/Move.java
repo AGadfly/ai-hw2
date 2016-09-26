@@ -1,5 +1,4 @@
-package twoD;
-
+package ticTacToe3D;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.lang.Integer;

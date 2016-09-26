@@ -1,4 +1,4 @@
-package twoD;
+package ticTacToe2D;
 /**
  * Contains all the constants needed among all classes.
  */

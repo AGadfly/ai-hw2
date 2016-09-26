@@ -1,4 +1,5 @@
-package threeD;
+package ticTacToe2D;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,7 +10,7 @@ import java.util.Vector;
  * 
  * Note:
  *      Use the verbose flag for outputting game information.
- *      Use the fast flag for using 1s move deadline instead of 10s.
+ *      Use the fast flag for using 100ms move deadline instead of 1000ms.
  *      Use the init flag if you want this client to initialize the game, that
  *      is, send a starting board without moving for the other client to move
  *      first.
@@ -51,7 +52,7 @@ public class Main {
       BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
       while ((input_message = br.readLine()) != null) {
         /* Deadline is one second from when we receive the message */
-        Deadline deadline = new Deadline(Deadline.getCpuTime() + (fast ? (long) 1e9 : (long) 1e10));
+        Deadline deadline = new Deadline(Deadline.getCpuTime() + (fast ? (long) 1e8 : (long) 1e9));
 
         /* Get game state from standard input */
         GameState input_state = new GameState(input_message);
