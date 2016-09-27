@@ -1,17 +1,13 @@
-package ticTacToe3D;
-
+//package ticTacToe3D;
 import java.util.*;
 
-
-
 public class Player {
+	private HashMap<GameState, Integer> stateCache;
 	/**
 	 * Performs a move
 	 *
-	 * @param gameState
-	 *            the current state of the board
-	 * @param deadline
-	 *            time before which we must have returned
+	 * @param gameState the current state of the board
+	 * @param deadline time before which we must have returned
 	 * @return the next state the board is in after our move
 	 */
 	public GameState play(final GameState gameState, final Deadline deadline) {
@@ -22,582 +18,52 @@ public class Player {
 			// Must play "pass" move if there are no other moves possible.
 			return new GameState(gameState, new Move());
 		}
-		int depth = checkWhichRound(gameState);
 		int[] values = new int[nextStates.size()];
+		stateCache = new HashMap<>();
         for (int i = 0; i < nextStates.size(); i++){
-        	values[i] = minimax(nextStates.elementAt(i), true, Integer.MIN_VALUE, Integer.MAX_VALUE, depth, deadline);
+        	values[i] = minimax(nextStates.elementAt(i), Integer.MIN_VALUE, Integer.MAX_VALUE, 1, deadline);
         }
 
-		/**
-		 * Here you should write your algorithms to get the best next move, i.e.
-		 * the best next state. This skeleton returns a random move instead.
-		 */
-		return nextStates.elementAt(getMaxIndex(values));
+        // return next best move -> move with max heuristic value
+        return nextStates.elementAt(Util.getMaxIndex(values));
 	}
-	
-	private int checkWhichRound (GameState state){
-		int status = 0;
+
+    /**
+     * Mix / Max algorithm for optimal path over given gamestate. Evaluates all future gameStates and rates
+     * them with a value, bigger meaning more favorable.
+     * @param state current game state
+     * @param player indicates whether to check min or max (max our turn) 
+     * @param alpha current alpha value for alpha beta pruning
+     * @param beta current beta value for alpha beta pruning
+     * @param depth max recursion depth
+     * @param dead time deadline for evaluation
+     * @return evaluation for current state
+     */
+	private int minimax (GameState state, int alpha, int beta, int depth, Deadline dead){
+		// current player
+		boolean isMax = state.getNextPlayer()==2 ? true : false;
 		
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			for (int j = 0; j < GameState.BOARD_SIZE; j++) {
-				for (int k = 0; k < GameState.BOARD_SIZE; k++) {
-					switch (state.at(i, j, k)) {
-					case (1):
-						status += 1;
-						break;
-
-					case (2):
-						status += 1;
-						break;
-
-					default:
-						break;
-					}
-				}
-			}
-		}
-		if(status < 10){
-			return 1;
-		} else if(status < 20){
-			return 2;
-		} else if(status < 30){
-			return 2;
-		} else if(status < 40){
-			return 4;
-		} else if(status < 50){
-			return 4;
-		} else if (status < 60) {
-			return 4;
-		} else{
-			return 5;
-		}
-	}
-	
-	private int getMaxIndex(int[] values){
-		int bestValue = values[0];
-		int index = 0;
-		for (int i = 1; i< values.length; i++){
-			if (values[i] > bestValue){
-				bestValue = values[i];
-				index = i;
-			}
-		}
-		return index;
-	}
-
-	private int minimax(GameState state, boolean player, int alpha, int beta,
-			int depth, Deadline dead) {
-		// recursion termination
-
-		if (depth == 0 && !(state.isEOG())) {
-			return eval(state);
-		}
-		if (state.isEOG()) {
-			if (state.isXWin()) {
-				return 100000;
-			} else if (state.isOWin()) {
-				return -100000;
-			} else {
-				return 0;
-			}
+		//recursion termination: recursion depth | end of game (leaf) 
+		if(depth == 0 || state.isEOG()){ 
+			return Heuristics.evaluate(state);
 		}
 
-		// find beste possible next move
-
-		else {
-			// our turn
-			if (player) {
-				int bestPossible = Integer.MIN_VALUE;
-				Vector<GameState> nextStates = new Vector<GameState>();
-				state.findPossibleMoves(nextStates);
-				for (GameState child : nextStates) {
-					bestPossible = Math
-							.max(bestPossible,
-									minimax(child, false, alpha, beta,
-											depth - 1, dead));
-					alpha = Math.max(alpha, bestPossible);
-					if (beta <= alpha) {
-						break;
-					}
-				}
-				return bestPossible;
-
-				// opponents turn
-			} else {
-				int bestPossible = Integer.MAX_VALUE;
-				Vector<GameState> nextStates = new Vector<GameState>();
-				state.findPossibleMoves(nextStates);
-				for (GameState child : nextStates) {
-					bestPossible = Math.min(bestPossible,
-							minimax(child, true, alpha, beta, depth - 1, dead));
-					beta = Math.min(beta, bestPossible);
-					if (beta <= alpha) {
-						break;
-					}
-				}
-				return bestPossible;
+		//find beste possible next best move
+		Vector<GameState> nextStates = new Vector<GameState>();
+		state.findPossibleMoves(nextStates);
+		int bestPossible = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+		for(GameState child : nextStates) {
+			if(isMax){ //our turn (max)
+				bestPossible = Math.max(bestPossible, minimax(child, alpha, beta, depth - 1, dead));
+				alpha = Math.max(alpha, bestPossible);				
+			} else { // opponents turn (min)
+				bestPossible = Math.min(bestPossible, minimax(child, alpha, beta, depth - 1, dead));
+				beta = Math.min(beta, bestPossible);
 			}
-		}
-	}
-
-	private int eval(GameState state) {
-		int x = 0;
-		int o = 0;
-		int n = 0;
-		int score = 0;
-
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			for (int j = 0; j < GameState.BOARD_SIZE; j++) {
-				for (int k = 0; k < GameState.BOARD_SIZE; k++) {
-					switch (state.at(i, k, j)) {
-					case (1):
-						x += 1;
-						break;
-
-					case (2):
-						o += 1;
-						break;
-
-					default:
-						n += 1;
-						break;
-					}
-				}
-				if (x == 3 && o == 0) {
-					score += 100;
-				} else if (x == 2 && o == 0) {
-					score += 10;
-				} else if (x == 1 && o == 0) {
-					score += 1;
-				} else if (o == 3 && x == 0) {
-					score -= 100;
-				} else if (o == 2 && x == 0) {
-					score -= 10;
-				} else if (o == 1 && x == 0) {
-					score -= 1;
-				}
-				x = 0;
-				o = 0;
-				n = 0;
-			}
-		}
-
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			for (int j = 0; j < GameState.BOARD_SIZE; j++) {
-				for (int k = 0; k < GameState.BOARD_SIZE; k++) {
-
-					switch (state.at(i, j, k)) {
-					case (1):
-						x += 1;
-						break;
-
-					case (2):
-						o += 1;
-						break;
-
-					default:
-						n += 1;
-						break;
-					}
-				}
-
-				if (x == 3 && o == 0) {
-					score += 100;
-				} else if (x == 2 && o == 0) {
-					score += 10;
-				} else if (x == 1 && o == 0) {
-					score += 1;
-				} else if (o == 3 && x == 0) {
-					score -= 100;
-				} else if (o == 2 && x == 0) {
-					score -= 10;
-				} else if (o == 1 && x == 0) {
-					score -= 1;
-				}
-				x = 0;
-				o = 0;
-				n = 0;
-			}
-		}
-
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			for (int j = 0; j < GameState.BOARD_SIZE; j++) {
-				for (int k = 0; k < GameState.BOARD_SIZE; k++) {
-					switch (state.at(k, i, j)) {
-					case (1):
-						x += 1;
-						break;
-
-					case (2):
-						o += 1;
-						break;
-
-					default:
-						n += 1;
-						break;
-					}
-				}
-				if (x == 3 && o == 0) {
-					score += 100;
-				} else if (x == 2 && o == 0) {
-					score += 10;
-				} else if (x == 1 && o == 0) {
-					score += 1;
-				} else if (o == 3 && x == 0) {
-					score -= 100;
-				} else if (o == 2 && x == 0) {
-					score -= 10;
-				} else if (o == 1 && x == 0) {
-					score -= 1;
-				}
-				x = 0;
-				o = 0;
-				n = 0;
-			}
-		}
-
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			for (int k = 0; k < GameState.BOARD_SIZE; k++) {
-				switch (state.at(i, k, k)) {
-				case (1):
-					x += 1;
-					break;
-
-				case (2):
-					o += 1;
-					break;
-
-				default:
-					n += 1;
-					break;
-				}
-			}
-			if (x == 3 && o == 0) {
-				score += 100;
-			} else if (x == 2 && o == 0) {
-				score += 10;
-			} else if (x == 1 && o == 0) {
-				score += 1;
-			} else if (o == 3 && x == 0) {
-				score -= 100;
-			} else if (o == 2 && x == 0) {
-				score -= 10;
-			} else if (o == 1 && x == 0) {
-				score -= 1;
-			}
-			x = 0;
-			o = 0;
-			n = 0;
-		}
-
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			for (int k = 0; k < GameState.BOARD_SIZE; k++) {
-				switch (state.at(i, k,
-						GameState.BOARD_SIZE - k)) {
-				case (1):
-					x += 1;
-					break;
-
-				case (2):
-					o += 1;
-					break;
-
-				default:
-					n += 1;
-					break;
-				}
-			}
-			if (x == 3 && o == 0) {
-				score += 100;
-			} else if (x == 2 && o == 0) {
-				score += 10;
-			} else if (x == 1 && o == 0) {
-				score += 1;
-			} else if (o == 3 && x == 0) {
-				score -= 100;
-			} else if (o == 2 && x == 0) {
-				score -= 10;
-			} else if (o == 1 && x == 0) {
-				score -= 1;
-			}
-			x = 0;
-			o = 0;
-			n = 0;
-		}
-
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			for (int k = 0; k < GameState.BOARD_SIZE; k++) {
-				switch (state.at(GameState.BOARD_SIZE - k, i, k)) {
-				case (1):
-					x += 1;
-					break;
-
-				case (2):
-					o += 1;
-					break;
-
-				default:
-					n += 1;
-					break;
-				}
-			}
-			if (x == 3 && o == 0) {
-				score += 100;
-			} else if (x == 2 && o == 0) {
-				score += 10;
-			} else if (x == 1 && o == 0) {
-				score += 1;
-			} else if (o == 3 && x == 0) {
-				score -= 100;
-			} else if (o == 2 && x == 0) {
-				score -= 10;
-			} else if (o == 1 && x == 0) {
-				score -= 1;
-			}
-			x = 0;
-			o = 0;
-			n = 0;
-		}
-
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			for (int k = 0; k < GameState.BOARD_SIZE; k++) {
-				switch (state.at(k, i, k)) {
-				case (1):
-					x += 1;
-					break;
-
-				case (2):
-					o += 1;
-					break;
-
-				default:
-					n += 1;
-					break;
-				}
-			}
-			if (x == 3 && o == 0) {
-				score += 100;
-			} else if (x == 2 && o == 0) {
-				score += 10;
-			} else if (x == 1 && o == 0) {
-				score += 1;
-			} else if (o == 3 && x == 0) {
-				score -= 100;
-			} else if (o == 2 && x == 0) {
-				score -= 10;
-			} else if (o == 1 && x == 0) {
-				score -= 1;
-			}
-			x = 0;
-			o = 0;
-			n = 0;
-		}
-
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			for (int k = 0; k < GameState.BOARD_SIZE; k++) {
-				switch (state.at(k, GameState.BOARD_SIZE - k, i)) {
-				case (1):
-					x += 1;
-					break;
-
-				case (2):
-					o += 1;
-					break;
-
-				default:
-					n += 1;
-					break;
-				}
-			}
-			if (x == 3 && o == 0) {
-				score += 100;
-			} else if (x == 2 && o == 0) {
-				score += 10;
-			} else if (x == 1 && o == 0) {
-				score += 1;
-			} else if (o == 3 && x == 0) {
-				score -= 100;
-			} else if (o == 2 && x == 0) {
-				score -= 10;
-			} else if (o == 1 && x == 0) {
-				score -= 1;
-			}
-			x = 0;
-			o = 0;
-			n = 0;
-		}
-
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			for (int k = 0; k < GameState.BOARD_SIZE; k++) {
-				switch (state.at(k, k, i)) {
-				case (1):
-					x += 1;
-					break;
-
-				case (2):
-					o += 1;
-					break;
-
-				default:
-					n += 1;
-					break;
-				}
-			}
-			if (x == 3 && o == 0) {
-				score += 100;
-			} else if (x == 2 && o == 0) {
-				score += 10;
-			} else if (x == 1 && o == 0) {
-				score += 1;
-			} else if (o == 3 && x == 0) {
-				score -= 100;
-			} else if (o == 2 && x == 0) {
-				score -= 10;
-			} else if (o == 1 && x == 0) {
-				score -= 1;
-			}
-			x = 0;
-			o = 0;
-			n = 0;
-		}
-
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			switch (state.at(i, i, i)) {
-			case (1):
-				x += 1;
-				break;
-
-			case (2):
-				o += 1;
-				break;
-
-			default:
-				n += 1;
+			if(beta <= alpha){ // alpha beta pruning
 				break;
 			}
-
-			if (x == 3 && o == 0) {
-				score += 100;
-			} else if (x == 2 && o == 0) {
-				score += 10;
-			} else if (x == 1 && o == 0) {
-				score += 1;
-			} else if (o == 3 && x == 0) {
-				score -= 100;
-			} else if (o == 2 && x == 0) {
-				score -= 10;
-			} else if (o == 1 && x == 0) {
-				score -= 1;
-			}
-			x = 0;
-			o = 0;
-			n = 0;
 		}
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			switch (state.at(GameState.BOARD_SIZE - i, i, i)) {
-			case (1):
-				x += 1;
-				break;
-
-			case (2):
-				o += 1;
-				break;
-
-			default:
-				n += 1;
-				break;
-			}
-
-			if (x == 3 && o == 0) {
-				score += 100;
-			} else if (x == 2 && o == 0) {
-				score += 10;
-			} else if (x == 1 && o == 0) {
-				score += 1;
-			} else if (o == 3 && x == 0) {
-				score -= 100;
-			} else if (o == 2 && x == 0) {
-				score -= 10;
-			} else if (o == 1 && x == 0) {
-				score -= 1;
-			}
-			x = 0;
-			o = 0;
-			n = 0;
-
-		}
-
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			switch (state.at(i, GameState.BOARD_SIZE - i, i)) {
-			case (1):
-				x += 1;
-				break;
-
-			case (2):
-				o += 1;
-				break;
-
-			default:
-				n += 1;
-				break;
-			}
-
-			if (x == 3 && o == 0) {
-				score += 100;
-			} else if (x == 2 && o == 0) {
-				score += 10;
-			} else if (x == 1 && o == 0) {
-				score += 1;
-			} else if (o == 3 && x == 0) {
-				score -= 100;
-			} else if (o == 2 && x == 0) {
-				score -= 10;
-			} else if (o == 1 && x == 0) {
-				score -= 1;
-			}
-			x = 0;
-			o = 0;
-			n = 0;
-
-		}
-
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			switch (state.at(i, i, GameState.BOARD_SIZE - i)) {
-			case (1):
-				x += 1;
-				break;
-
-			case (2):
-				o += 1;
-				break;
-
-			default:
-				n += 1;
-				break;
-			}
-
-			if (x == 3 && o == 0) {
-				score += 100;
-			} else if (x == 2 && o == 0) {
-				score += 10;
-			} else if (x == 1 && o == 0) {
-				score += 1;
-			} else if (o == 3 && x == 0) {
-				score -= 100;
-			} else if (o == 2 && x == 0) {
-				score -= 10;
-			} else if (o == 1 && x == 0) {
-				score -= 1;
-			}
-			x = 0;
-			o = 0;
-			n = 0;
-
-		}
-		/*
-		 * if(score > 0) { return 1; } if(score < 0) { return -1; } else {
-		 * return 0; }
-		 */
-		return score;
+		return bestPossible;
 	}
 }

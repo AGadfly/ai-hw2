@@ -2,6 +2,8 @@ package ticTacToe2D;
 import java.util.*;
 
 public class Player {
+	private HashMap<GameState, Integer> stateCache;
+	
     /**
      * Performs a move
      *
@@ -19,6 +21,7 @@ public class Player {
         }
         
         int[] values = new int[nextStates.size()];
+        stateCache = new HashMap<>();
         for (int i = 0; i < nextStates.size(); i++){
         	values[i] = minimax(nextStates.elementAt(i), Integer.MIN_VALUE, Integer.MAX_VALUE, 2, deadline);
         }
@@ -52,10 +55,20 @@ public class Player {
 		int bestPossible = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
 		for(GameState child : nextStates) {
 			if(isMax){ //our turn (max)
-				bestPossible = Math.max(bestPossible, minimax(child, alpha, beta, depth - 1, dead));
+				if(stateCache.containsKey(child)){
+					bestPossible = stateCache.get(child);
+				} else {
+					bestPossible = Math.max(bestPossible, minimax(child, alpha, beta, depth - 1, dead));
+					stateCache.put(child, bestPossible);
+				}
 				alpha = Math.max(alpha, bestPossible);				
 			} else { // opponents turn (min)
-				bestPossible = Math.min(bestPossible, minimax(child, alpha, beta, depth - 1, dead));
+				if(stateCache.containsKey(child)){
+					bestPossible = stateCache.get(child);
+				} else {
+					bestPossible = Math.min(bestPossible, minimax(child, alpha, beta, depth - 1, dead));
+					stateCache.put(child, bestPossible);
+				}
 				beta = Math.min(beta, bestPossible);
 			}
 			if(beta <= alpha){ // alpha beta pruning
