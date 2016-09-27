@@ -20,7 +20,7 @@ public class Player {
         
         int[] values = new int[nextStates.size()];
         for (int i = 0; i < nextStates.size(); i++){
-        	values[i] = minimax(nextStates.elementAt(i), true, Integer.MIN_VALUE, Integer.MAX_VALUE, 3, deadline);
+        	values[i] = minimax(nextStates.elementAt(i), Integer.MIN_VALUE, Integer.MAX_VALUE, 2, deadline);
         }
         // return next best move -> move with max heuristic value
         return nextStates.elementAt(Util.getMaxIndex(values));
@@ -37,33 +37,28 @@ public class Player {
      * @param dead time deadline for evaluation
      * @return evaluation for current state
      */
-	private int minimax (GameState state, boolean player, int alpha, int beta, int depth, Deadline dead){
-		//recursion termination
-		if(depth == 0 && !(state.isEOG())){ // guard clause for depth
-			return Heuristics.countSymbols(state);
+	private int minimax (GameState state, int alpha, int beta, int depth, Deadline dead){
+		// current player
+		boolean isMax = state.getNextPlayer()==2 ? true : false;
+		
+		//recursion termination: recursion depth | end of game (leaf) 
+		if(depth == 0 || state.isEOG()){ 
+			return Heuristics.evaluate(state);
 		}
-		if(state.isEOG()){ // guard clause for win
-			if(state.isXWin()){
-				return 10000;
-			} else if(state.isOWin()){
-				return -10000;
-			} else {
-				return 500;
-			}	
-		}
-		//find beste possible next move
+
+		//find beste possible next best move
 		Vector<GameState> nextStates = new Vector<GameState>();
 		state.findPossibleMoves(nextStates);
-		int bestPossible = player ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+		int bestPossible = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
 		for(GameState child : nextStates) {
-			if(player){ //our turn (max)
-				bestPossible = Math.max(bestPossible, minimax(child, false, alpha, beta, depth - 1, dead));
+			if(isMax){ //our turn (max)
+				bestPossible = Math.max(bestPossible, minimax(child, alpha, beta, depth - 1, dead));
 				alpha = Math.max(alpha, bestPossible);				
 			} else { // opponents turn (min)
-				bestPossible = Math.min(bestPossible, minimax(child, true, alpha, beta, depth - 1, dead));
+				bestPossible = Math.min(bestPossible, minimax(child, alpha, beta, depth - 1, dead));
 				beta = Math.min(beta, bestPossible);
 			}
-			if(beta <= alpha){
+			if(beta <= alpha){ // alpha beta pruning
 				break;
 			}
 		}

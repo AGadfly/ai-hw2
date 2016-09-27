@@ -11,14 +11,24 @@ public class Heuristics {
 	 * @param state Current gameState
 	 * @return value representing the evaluation of that state
 	 */
-	public static int countSymbols(GameState state){
+	public static int evaluate(GameState state){
    		int x = 0; 
 		int o = 0; 
 		int score = 0;
 		
+		// check for win
+		if(state.isEOG()){
+			if(state.isXWin()){
+				return 10000;
+			} else if(state.isOWin()){
+				return -10000;
+			} else {
+				return 0;
+			}	
+		}
+		
 		// look ahead one step
 	    Vector<GameState> nextStates = new Vector<GameState>();
-	    Vector<GameState> secondStates = new Vector<GameState>();
 	    state.findPossibleMoves(nextStates);
 	    for(GameState child: nextStates){
 			if(child.isEOG()){ // guard clause for win
@@ -63,7 +73,7 @@ public class Heuristics {
 			o = 0;
 		}
 		
-		// evaluating diagonal
+		// evaluating first diagonal
 		for(int i = 0; i < GameState.BOARD_SIZE; i++){
 			switch(state.at(i, i)){
 				case(1): x += 1;
@@ -74,6 +84,21 @@ public class Heuristics {
 				}
 		}
 		score += calculateScore(o, x);
+		x = 0;
+		o = 0;
+		
+		// evaluating second diagonal
+		for(int i = 0; i < GameState.BOARD_SIZE; i++){
+			switch(state.at(i, GameState.BOARD_SIZE-i-1)){
+				case(1): x += 1;
+				break;
+				
+				case(2): o += 1;
+				break;
+				}
+		}
+		score += calculateScore(o, x);
+		
 		return score;
 	}
 	
