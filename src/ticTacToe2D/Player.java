@@ -1,5 +1,6 @@
 package ticTacToe2D;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Player {
 	private HashMap<GameState, Integer> stateCache;
@@ -41,6 +42,7 @@ public class Player {
      * @return evaluation for current state
      */
 	private int minimax (GameState state, int alpha, int beta, int depth, Deadline dead){
+		System.out.println(TimeUnit.NANOSECONDS.toMillis(dead.timeUntil()));
 		// current player
 		boolean isMax = state.getNextPlayer()==2 ? true : false;
 		//recursion termination: recursion depth | end of game (leaf) 
