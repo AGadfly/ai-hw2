@@ -1,8 +1,8 @@
-//package ticTacToe3D;
+package ticTacToe3D;
 import java.util.Vector;
 
 public class Heuristics {
-
+	
 	/**
 	 * Simple heuristic function fpr 2DTicTacToe which counts the
 	 * number of different symbols and the board and favors the player
@@ -16,256 +16,256 @@ public class Heuristics {
 		int o = 0; 
 		int score = 0;
 		
-		// check for win
-		if(state.isEOG()){
-			if(state.isXWin()){
-				return 100000;
-			} else if(state.isOWin()){
-				return -100000;
-			} else {
-				return 0;
-			}	
-		}
+	       // check for win
+        if(state.isEOG()){
+            if(state.isXWin()){
+                return 100000;
+            } else if(state.isOWin()){
+                return -100000;
+            } else {
+                return 0;
+            }   
+        }
 
-		// look ahead one step
-	    Vector<GameState> nextStates = new Vector<GameState>();
-	    state.findPossibleMoves(nextStates);
-	    for(GameState child: nextStates){
-			if(child.isEOG()){ // guard clause for win
-				if(child.isXWin()){
-					return 100000;
-				} else if(child.isOWin()){
-					return 100000;
-				} else {
-					return 0;
-				}	
-			}
-		}
+        // look ahead one step
+        Vector<GameState> nextStates = new Vector<GameState>();
+        state.findPossibleMoves(nextStates);
+        for(GameState child: nextStates){
+            if(child.isEOG()){ // guard clause for win
+                if(child.isXWin()){
+                    return 100000;
+                } else if(child.isOWin()){
+                    return 100000;
+                } else {
+                    return 0;
+                }   
+            }
+        }
 
-	    // evaluate in y direction
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			for (int j = 0; j < GameState.BOARD_SIZE; j++) {
-				for (int k = 0; k < GameState.BOARD_SIZE; k++) {
-					switch (state.at(i, k, j)) {
-					case (1):
-						x += 1;
-						break;
+        // evaluate in y direction
+        for (int i = 0; i < GameState.BOARD_SIZE; i++) {
+            for (int j = 0; j < GameState.BOARD_SIZE; j++) {
+                for (int k = 0; k < GameState.BOARD_SIZE; k++) {
+                    switch (state.at(i, k, j)) {
+                    case (1):
+                        x += 1;
+                        break;
 
-					case (2):
-						o += 1;
-						break;
-					}
-				}
-				score += calculateScore(o, x);
-				x = 0;
-				o = 0;
-			}
-		}
+                    case (2):
+                        o += 1;
+                        break;
+                    }
+                }
+                score += calculateScore(o, x);
+                x = 0;
+                o = 0;
+            }
+        }
 
-		// evaluate z direction
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			for (int j = 0; j < GameState.BOARD_SIZE; j++) {
-				for (int k = 0; k < GameState.BOARD_SIZE; k++) {
-					switch (state.at(i, j, k)) {
-					case (1):
-						x += 1;
-						break;
+        // evaluate z direction
+        for (int i = 0; i < GameState.BOARD_SIZE; i++) {
+            for (int j = 0; j < GameState.BOARD_SIZE; j++) {
+                for (int k = 0; k < GameState.BOARD_SIZE; k++) {
+                    switch (state.at(i, j, k)) {
+                    case (1):
+                        x += 1;
+                        break;
 
-					case (2):
-						o += 1;
-						break;
-					}
-				}
-				score += calculateScore(o, x);
-				x = 0;
-				o = 0;
-			}
-		}
-		
-		// evaluate x direction
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			for (int j = 0; j < GameState.BOARD_SIZE; j++) {
-				for (int k = 0; k < GameState.BOARD_SIZE; k++) {
-					switch (state.at(k, i, j)) {
-					case (1):
-						x += 1;
-						break;
+                    case (2):
+                        o += 1;
+                        break;
+                    }
+                }
+                score += calculateScore(o, x);
+                x = 0;
+                o = 0;
+            }
+        }
+        
+        // evaluate x direction
+        for (int i = 0; i < GameState.BOARD_SIZE; i++) {
+            for (int j = 0; j < GameState.BOARD_SIZE; j++) {
+                for (int k = 0; k < GameState.BOARD_SIZE; k++) {
+                    switch (state.at(k, i, j)) {
+                    case (1):
+                        x += 1;
+                        break;
 
-					case (2):
-						o += 1;
-						break;
-					}
-				}
-				score += calculateScore(o, x);
-				x = 0;
-				o = 0;
-			}
-		}
+                    case (2):
+                        o += 1;
+                        break;
+                    }
+                }
+                score += calculateScore(o, x);
+                x = 0;
+                o = 0;
+            }
+        }
 
-		// evaluate diagionals in x plane
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			for (int k = 0; k < GameState.BOARD_SIZE; k++) {
-				switch (state.at(i, k, k)) {
-				case (1):
-					x += 1;
-					break;
+        // evaluate diagionals in x plane
+        for (int i = 0; i < GameState.BOARD_SIZE; i++) {
+            for (int k = 0; k < GameState.BOARD_SIZE; k++) {
+                switch (state.at(i, k, k)) {
+                case (1):
+                    x += 1;
+                    break;
 
-				case (2):
-					o += 1;
-					break;
-				}
-			}
-			score += calculateScore(o, x);
-			x = 0;
-			o = 0;
-		}
-		
-		// evaluate other diagionals in x plane
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			for (int k = 0; k < GameState.BOARD_SIZE; k++) {
-				switch (state.at(i, k, GameState.BOARD_SIZE - k)) {
-				case (1):
-					x += 1;
-					break;
+                case (2):
+                    o += 1;
+                    break;
+                }
+            }
+            score += calculateScore(o, x);
+            x = 0;
+            o = 0;
+        }
+        
+        // evaluate other diagionals in x plane
+        for (int i = 0; i < GameState.BOARD_SIZE; i++) {
+            for (int k = 0; k < GameState.BOARD_SIZE; k++) {
+                switch (state.at(i, k, GameState.BOARD_SIZE - k)) {
+                case (1):
+                    x += 1;
+                    break;
 
-				case (2):
-					o += 1;
-					break;
-				}
-			}
-			score += calculateScore(o, x);
-			x = 0;
-			o = 0;
-		}
+                case (2):
+                    o += 1;
+                    break;
+                }
+            }
+            score += calculateScore(o, x);
+            x = 0;
+            o = 0;
+        }
 
-		// evaluate diagionals in x plane
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			for (int k = 0; k < GameState.BOARD_SIZE; k++) {
-				switch (state.at(GameState.BOARD_SIZE - k, i, k)) {
-				case (1):
-					x += 1;
-					break;
+        // evaluate diagionals in x plane
+        for (int i = 0; i < GameState.BOARD_SIZE; i++) {
+            for (int k = 0; k < GameState.BOARD_SIZE; k++) {
+                switch (state.at(GameState.BOARD_SIZE - k, i, k)) {
+                case (1):
+                    x += 1;
+                    break;
 
-				case (2):
-					o += 1;
-					break;
-				}
-			}
-			score += calculateScore(o, x);
-			x = 0;
-			o = 0;
-		}
+                case (2):
+                    o += 1;
+                    break;
+                }
+            }
+            score += calculateScore(o, x);
+            x = 0;
+            o = 0;
+        }
 
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			for (int k = 0; k < GameState.BOARD_SIZE; k++) {
-				switch (state.at(k, i, k)) {
-				case (1):
-					x += 1;
-					break;
+        for (int i = 0; i < GameState.BOARD_SIZE; i++) {
+            for (int k = 0; k < GameState.BOARD_SIZE; k++) {
+                switch (state.at(k, i, k)) {
+                case (1):
+                    x += 1;
+                    break;
 
-				case (2):
-					o += 1;
-					break;
-				}
-			}
-			score += calculateScore(o, x);
-			x = 0;
-			o = 0;
-		}
+                case (2):
+                    o += 1;
+                    break;
+                }
+            }
+            score += calculateScore(o, x);
+            x = 0;
+            o = 0;
+        }
 
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			for (int k = 0; k < GameState.BOARD_SIZE; k++) {
-				switch (state.at(k, GameState.BOARD_SIZE - k, i)) {
-				case (1):
-					x += 1;
-					break;
+        for (int i = 0; i < GameState.BOARD_SIZE; i++) {
+            for (int k = 0; k < GameState.BOARD_SIZE; k++) {
+                switch (state.at(k, GameState.BOARD_SIZE - k, i)) {
+                case (1):
+                    x += 1;
+                    break;
 
-				case (2):
-					o += 1;
-					break;
-				}
-			}
-			score += calculateScore(o, x);
-			x = 0;
-			o = 0;
-		}
+                case (2):
+                    o += 1;
+                    break;
+                }
+            }
+            score += calculateScore(o, x);
+            x = 0;
+            o = 0;
+        }
 
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			for (int k = 0; k < GameState.BOARD_SIZE; k++) {
-				switch (state.at(k, k, i)) {
-				case (1):
-					x += 1;
-					break;
+        for (int i = 0; i < GameState.BOARD_SIZE; i++) {
+            for (int k = 0; k < GameState.BOARD_SIZE; k++) {
+                switch (state.at(k, k, i)) {
+                case (1):
+                    x += 1;
+                    break;
 
-				case (2):
-					o += 1;
-					break;
-				}
-			}
-			score += calculateScore(o, x);
-			x = 0;
-			o = 0;
-		}
+                case (2):
+                    o += 1;
+                    break;
+                }
+            }
+            score += calculateScore(o, x);
+            x = 0;
+            o = 0;
+        }
 
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			switch (state.at(i, i, i)) {
-			case (1):
-				x += 1;
-				break;
+        for (int i = 0; i < GameState.BOARD_SIZE; i++) {
+            switch (state.at(i, i, i)) {
+            case (1):
+                x += 1;
+                break;
 
-			case (2):
-				o += 1;
-				break;
-			}
-			score += calculateScore(o, x);
-			x = 0;
-			o = 0;
-		}
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			switch (state.at(GameState.BOARD_SIZE - i, i, i)) {
-			case (1):
-				x += 1;
-				break;
+            case (2):
+                o += 1;
+                break;
+            }
+            score += calculateScore(o, x);
+            x = 0;
+            o = 0;
+        }
+        for (int i = 0; i < GameState.BOARD_SIZE; i++) {
+            switch (state.at(GameState.BOARD_SIZE - i, i, i)) {
+            case (1):
+                x += 1;
+                break;
 
-			case (2):
-				o += 1;
-				break;
-			}
-			score += calculateScore(o, x);
-			x = 0;
-			o = 0;
-		}
+            case (2):
+                o += 1;
+                break;
+            }
+            score += calculateScore(o, x);
+            x = 0;
+            o = 0;
+        }
 
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			switch (state.at(i, GameState.BOARD_SIZE - i, i)) {
-			case (1):
-				x += 1;
-				break;
+        for (int i = 0; i < GameState.BOARD_SIZE; i++) {
+            switch (state.at(i, GameState.BOARD_SIZE - i, i)) {
+            case (1):
+                x += 1;
+                break;
 
-			case (2):
-				o += 1;
-				break;
-			}
-			score += calculateScore(o, x);
-			x = 0;
-			o = 0;
-		}
+            case (2):
+                o += 1;
+                break;
+            }
+            score += calculateScore(o, x);
+            x = 0;
+            o = 0;
+        }
 
-		for (int i = 0; i < GameState.BOARD_SIZE; i++) {
-			switch (state.at(i, i, GameState.BOARD_SIZE - i)) {
-			case (1):
-				x += 1;
-				break;
+        for (int i = 0; i < GameState.BOARD_SIZE; i++) {
+            switch (state.at(i, i, GameState.BOARD_SIZE - i)) {
+            case (1):
+                x += 1;
+                break;
 
-			case (2):
-				o += 1;
-				break;
-			}
-			score += calculateScore(o, x);
-			x = 0;
-			o = 0;
-		}
-		return score;
+            case (2):
+                o += 1;
+                break;
+            }
+            score += calculateScore(o, x);
+            x = 0;
+            o = 0;
+        }
+    return score;
 	}
 		
 	/**

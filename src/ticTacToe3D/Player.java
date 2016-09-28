@@ -1,4 +1,4 @@
-//package ticTacToe3D;
+package ticTacToe3D;
 import java.util.*;
 
 public class Player {
@@ -21,7 +21,7 @@ public class Player {
 		int[] values = new int[nextStates.size()];
 		stateCache = new HashMap<>();
         for (int i = 0; i < nextStates.size(); i++){
-        	values[i] = minimax(nextStates.elementAt(i), Integer.MIN_VALUE, Integer.MAX_VALUE, 1, deadline);
+        	values[i] = minimax(nextStates.elementAt(i), Integer.MIN_VALUE, Integer.MAX_VALUE, 3, deadline);
         }
 
         // return next best move -> move with max heuristic value
@@ -52,7 +52,8 @@ public class Player {
 		Vector<GameState> nextStates = new Vector<GameState>();
 		state.findPossibleMoves(nextStates);
 		int bestPossible = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-		for(GameState child : nextStates) {
+		Vector<GameState> orderedMoves = orderMoves(nextStates, isMax); // move ordering for earlier pruning
+		for(GameState child : orderedMoves) {
 			if(isMax){ //our turn (max)
 				bestPossible = Math.max(bestPossible, minimax(child, alpha, beta, depth - 1, dead));
 				alpha = Math.max(alpha, bestPossible);				
@@ -65,5 +66,24 @@ public class Player {
 			}
 		}
 		return bestPossible;
+	}
+	
+	/**
+	 * Sorts states on their heuristic value
+	 * @param nextStates states to sort
+	 * @param descending descending or ascending
+	 * @return sorted states
+	 */
+	private Vector<GameState> orderMoves(Vector<GameState> nextStates,  boolean descending){
+		Collections.sort(nextStates, new Comparator<GameState>() {
+			@Override
+			public int compare(GameState o1, GameState o2) {
+				return Integer.compare(Heuristics.evaluate(o1), Heuristics.evaluate(o2));
+			}
+		});
+		if(descending){
+			Collections.reverse(nextStates);
+		}
+		return nextStates;
 	}
 }

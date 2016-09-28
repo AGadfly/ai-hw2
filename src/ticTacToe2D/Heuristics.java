@@ -1,6 +1,4 @@
 package ticTacToe2D;
-import java.util.Vector;
-
 public class Heuristics {
 	
 	/**
@@ -27,21 +25,6 @@ public class Heuristics {
 			}	
 		}
 		
-		// look ahead one step
-	    Vector<GameState> nextStates = new Vector<GameState>();
-	    state.findPossibleMoves(nextStates);
-	    for(GameState child: nextStates){
-			if(child.isEOG()){ // guard clause for win
-				if(child.isXWin()){
-					return 10000;
-				} else if(child.isOWin()){
-					return -10000;
-				} else {
-					return 500;
-				}	
-			}
-		}
-   
 		// evaluating rows
 		for(int i = 0; i < GameState.BOARD_SIZE; i++){
 			for(int j = 0; j < GameState.BOARD_SIZE; j++){
@@ -57,6 +40,7 @@ public class Heuristics {
 			x = 0;
 			o = 0;
 		}
+		
 		// evaluating columns
 		for(int i = 0; i < GameState.BOARD_SIZE; i++){
 			for(int j = 0; j < GameState.BOARD_SIZE; j++){
@@ -98,7 +82,6 @@ public class Heuristics {
 				}
 		}
 		score += calculateScore(o, x);
-		
 		return score;
 	}
 	
@@ -110,17 +93,17 @@ public class Heuristics {
 	 */
 	private static int calculateScore(int o, int x){
 		int score = 0;
-		if(x == 3 && o == 0){
+		if(x == 3){
 			score += 1000;
-		} else if(x == 2 && o == 0){
+		} else if(x == 2){
 			score += 100;
-		} else if(x == 1 && o == 0){
+		} else if(x == 1){
 			score += 10;
-		}else if(o == 3 && x == 0){
+		}else if(o == 3){
 			score -= 1000;
-		} else if(o == 2 && x == 0){
+		} else if(o == 2){
 			score -= 100;
-		} else if(o == 1 && x == 0){
+		} else if(o == 1){
 			score -= 10;
 		}
 		return score;

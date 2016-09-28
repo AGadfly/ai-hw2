@@ -23,7 +23,7 @@ public class Player {
         int[] values = new int[nextStates.size()];
         stateCache = new HashMap<>();
         for (int i = 0; i < nextStates.size(); i++){
-        	values[i] = minimax(nextStates.elementAt(i), Integer.MIN_VALUE, Integer.MAX_VALUE, 2, deadline);
+        	values[i] = minimax(nextStates.elementAt(i), Integer.MIN_VALUE, Integer.MAX_VALUE,  6, deadline);
         }
         // return next best move -> move with max heuristic value
         return nextStates.elementAt(Util.getMaxIndex(values));
@@ -43,7 +43,6 @@ public class Player {
 	private int minimax (GameState state, int alpha, int beta, int depth, Deadline dead){
 		// current player
 		boolean isMax = state.getNextPlayer()==2 ? true : false;
-		
 		//recursion termination: recursion depth | end of game (leaf) 
 		if(depth == 0 || state.isEOG()){ 
 			return Heuristics.evaluate(state);
@@ -53,22 +52,13 @@ public class Player {
 		Vector<GameState> nextStates = new Vector<GameState>();
 		state.findPossibleMoves(nextStates);
 		int bestPossible = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-		for(GameState child : nextStates) {
+		Vector<GameState> orderedMoves = orderMoves(nextStates, isMax); // move ordering for earlier pruning
+		for(GameState child : orderedMoves) {
 			if(isMax){ //our turn (max)
-				if(stateCache.containsKey(child)){
-					bestPossible = stateCache.get(child);
-				} else {
-					bestPossible = Math.max(bestPossible, minimax(child, alpha, beta, depth - 1, dead));
-					stateCache.put(child, bestPossible);
-				}
+				bestPossible = Math.max(bestPossible, minimax(child, alpha, beta, depth - 1, dead));
 				alpha = Math.max(alpha, bestPossible);				
 			} else { // opponents turn (min)
-				if(stateCache.containsKey(child)){
-					bestPossible = stateCache.get(child);
-				} else {
-					bestPossible = Math.min(bestPossible, minimax(child, alpha, beta, depth - 1, dead));
-					stateCache.put(child, bestPossible);
-				}
+				bestPossible = Math.min(bestPossible, minimax(child, alpha, beta, depth - 1, dead));
 				beta = Math.min(beta, bestPossible);
 			}
 			if(beta <= alpha){ // alpha beta pruning
@@ -76,5 +66,24 @@ public class Player {
 			}
 		}
 		return bestPossible;
+	}
+	
+	/**
+	 * Sorts states on their heuristic value
+	 * @param nextStates states to sort
+	 * @param descending descending or ascending
+	 * @return sorted states
+	 */
+	private Vector<GameState> orderMoves(Vector<GameState> nextStates,  boolean descending){
+		Collections.sort(nextStates, new Comparator<GameState>() {
+			@Override
+			public int compare(GameState o1, GameState o2) {
+				return Integer.compare(Heuristics.evaluate(o1), Heuristics.evaluate(o2));
+			}
+		});
+		if(descending){
+			Collections.reverse(nextStates);
+		}
+		return nextStates;
 	}
 }
