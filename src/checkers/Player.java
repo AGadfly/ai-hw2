@@ -7,7 +7,9 @@ import java.util.concurrent.TimeUnit;
  * TODO: Ending states lookup table
  */
 public class Player {
-	private HashMap<GameState, Integer> stateCache;
+	private int maxPlayer = -1;
+	private int maxDepth = 8;
+	
     /**
      * Performs a move
      *
@@ -26,14 +28,12 @@ public class Player {
         }
 
 		int[] values = new int[lNextStates.size()];
-		stateCache = new HashMap<>();
         for (int i = 0; i < lNextStates.size(); i++){
         	// just use states so far if timelimit close
-        	if(TimeUnit.NANOSECONDS.toMillis(pDue.timeUntil())<500){
+        	if(TimeUnit.NANOSECONDS.toMillis(pDue.timeUntil())<150){
         		break;
         	}
-        	System.err.println(Helper.getDepth(lNextStates.elementAt(i)));
-        	values[i] = minimax(lNextStates.elementAt(i), Integer.MIN_VALUE, Integer.MAX_VALUE, 9);
+        	values[i] = minimax(lNextStates.elementAt(i), Integer.MIN_VALUE, Integer.MAX_VALUE, maxDepth);
         }
 
         // return next best move -> move with max heuristic value
@@ -52,11 +52,19 @@ public class Player {
      * @return evaluation for current state
      */
 	private int minimax (GameState state, int alpha, int beta, int depth){
+		// check who to maximize for
+		if(depth == maxDepth){
+			this.maxPlayer = state.getNextPlayer()==Constants.CELL_WHITE ? Constants.CELL_RED : Constants.CELL_WHITE;
+		}
+		
 		// current player
-		boolean isMax = state.getNextPlayer()==2 ? true : false;
+		boolean isMax = state.getNextPlayer()==this.maxPlayer ? true : false;
 		
 		//recursion termination: recursion depth | end of game (leaf) 
 		if(depth == 0 || state.isEOG()){ 
+			if(this.maxPlayer == Constants.CELL_RED){
+				return Heuristics.evaluate(state)*-1;
+			}
 			return Heuristics.evaluate(state);
 		}
 

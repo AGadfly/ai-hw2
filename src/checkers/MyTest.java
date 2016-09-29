@@ -18,27 +18,15 @@ public class MyTest {
 	 */
 
 	public static void main(String[] args) {
-		GameState state = new GameState("rrrrrrrrrrrr........wwwwwwwwwwww -1 r 50");
-		GameState state2 = new GameState("rrrrrrrr..rr......rrwwwwwwwrrrrr -1 r 50");
-		GameState state3 = new GameState("wwwww......ww.r..r.ww......wwwww -1 r 50");
 		//GameState state8 = new GameState("44444333322442133124422333344444");
-		GameState state4 = new GameState("rrrrrrrrrrrr........wwwwwwwwwwww -1 r 50");
-		GameState state5 = new GameState("rrrrrrrrrrrr........wwwwwwwwwwww -1 r 50");
-
-		System.out.println(Heuristics.countPieces(state));
-		int count = 0;
-		for(int i=0; i<GameState.NUMBER_OF_SQUARES; i++){
-			if(state3.get(i) == Constants.CELL_RED){
-				count += Heuristics.checkPosition(i);
-			}
-		}
-		System.out.println(count);
-		//System.out.println(Heuristics.evaluate(state));
-		//System.out.println(Heuristics.evaluate(state2));
-		System.out.println(Heuristics.evaluate(state3) + "    but shoud be -66");
-
-
-
+		GameState state = new GameState("rrrrrrrrrrrr........wwwwwwwwwwww -1 r 50");
+		//GameState state2 = new GameState("rrrrrrrr..rr......rrwwwwwwwrrrrr -1 r 50");
+		//GameState state3 = new GameState("wwwww......ww.r..r.ww......wwwww -1 r 50");
+		//System.out.println(Heuristics.evaluate(state) + " expected 0");
+		//System.out.println(Heuristics.evaluate(state2) + " expected -30");
+		//System.out.println(Heuristics.evaluate(state3) + " expeted 36");
+		Player p = new Player();
+		Deadline deadline = new Deadline(Deadline.getCpuTime() + (long) 1e9);
+		System.out.println(p.play(state, deadline).toMessage());
 	}
-
 }

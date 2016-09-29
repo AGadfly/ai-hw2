@@ -19,7 +19,7 @@ import java.util.List;
 public class Heuristics {
 	private final static List<Integer> KING_POSITIONS = Arrays.asList(new Integer[]{0,1,2,3,4,12,20,11,19,27,28,29,30,31});
 	private final static List<Integer> POSITION_3 = Arrays.asList(new Integer[]{24,16,8,5,6,7,15,23});
-	private final static List<Integer> POSITION_2 = Arrays.asList(new Integer[]{25,21,13,9,10,18});
+	private final static List<Integer> POSITION_2 = Arrays.asList(new Integer[]{25,26,21,13,9,10,18});
 	private final static List<Integer> POSITION_1 = Arrays.asList(new Integer[]{22,17,14});
 	/**
 	 * Simple heuristic function for 2DTicTacToe which counts the
@@ -38,7 +38,7 @@ public class Heuristics {
 			} else if(state.isWhiteWin()){
 				return 1000;
 			} else {
-				return 0;
+				return 50;
 			}
 		}
 		score += countPieces(state);
@@ -55,17 +55,17 @@ public class Heuristics {
 		for(int i=0; i<GameState.NUMBER_OF_SQUARES; i++){
 			int current = state.get(i);
 			if(current == Constants.CELL_RED){
-				red += 1;
+				red += 2;
 				if(current == Constants.CELL_KING){
 					red += 5;
 				}
-				red += checkPosition(i);
+				//red += checkPosition(i);
 			}else if(current == Constants.CELL_WHITE){
-				white += 1;
+				white += 2;
 				if(current == Constants.CELL_KING){
 					white += 5;
 				}
-				white += checkPosition(i);
+				//white += checkPosition(i);
 			}
 		}
 		score = white - red;
@@ -76,9 +76,9 @@ public class Heuristics {
 		int score = 0;
 		
 		if(KING_POSITIONS.contains(piece)){
-			score = 40;
+			score = 4;
 		} else if(POSITION_3.contains(piece)){
-			score = 5;
+			score = 3;
 		} else if(POSITION_2.contains(piece)){
 			score = 2;
 		} else if(POSITION_1.contains(piece)){
