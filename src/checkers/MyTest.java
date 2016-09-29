@@ -18,8 +18,6 @@ public class MyTest {
 	 */
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		
 		GameState state = new GameState("rrrrrrrrrrrr........wwwwwwwwwwww -1 r 50");
 		GameState state2 = new GameState("rrrrrrrr..rr......rrwwwwwwwrrrrr -1 r 50");
 		GameState state3 = new GameState("wwwww......ww.r..r.ww......wwwww -1 r 50");
@@ -27,10 +25,17 @@ public class MyTest {
 		GameState state4 = new GameState("rrrrrrrrrrrr........wwwwwwwwwwww -1 r 50");
 		GameState state5 = new GameState("rrrrrrrrrrrr........wwwwwwwwwwww -1 r 50");
 
-		
-		System.out.println(Heuristics.evaluate(state));
-		System.out.println(Heuristics.evaluate(state2));
-		System.out.println(Heuristics.evaluate(state3) + "    but shoud be -68");
+		System.out.println(Heuristics.countPieces(state));
+		int count = 0;
+		for(int i=0; i<GameState.NUMBER_OF_SQUARES; i++){
+			if(state3.get(i) == Constants.CELL_RED){
+				count += Heuristics.checkPosition(i);
+			}
+		}
+		System.out.println(count);
+		//System.out.println(Heuristics.evaluate(state));
+		//System.out.println(Heuristics.evaluate(state2));
+		System.out.println(Heuristics.evaluate(state3) + "    but shoud be -66");
 
 
 

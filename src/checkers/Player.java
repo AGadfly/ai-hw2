@@ -1,9 +1,6 @@
 package checkers;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-
-import com.sun.corba.se.impl.javax.rmi.CORBA.Util;
-
 /**
  * TODO: Repeated state chaching
  * TODO: Symmetry breaking
@@ -36,7 +33,7 @@ public class Player {
         		break;
         	}
         	System.err.println(Helper.getDepth(lNextStates.elementAt(i)));
-        	values[i] = minimax(lNextStates.elementAt(i), Integer.MIN_VALUE, Integer.MAX_VALUE, Helper.getDepth(lNextStates.elementAt(i)));
+        	values[i] = minimax(lNextStates.elementAt(i), Integer.MIN_VALUE, Integer.MAX_VALUE, 9);
         }
 
         // return next best move -> move with max heuristic value

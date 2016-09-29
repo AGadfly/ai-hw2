@@ -1,5 +1,6 @@
 package checkers;
 import java.util.Arrays;
+import java.util.List;
 
 /*
  *    col 0  1  2  3  4  5  6  7
@@ -16,10 +17,10 @@ import java.util.Arrays;
  *        0  1  2  3  4  5  6  7
  */
 public class Heuristics {
-	private final static int [] KING_POSITIONS = new int[]{0,1,2,3,4,12,20,11,19,27,28,29,30,31};
-	private final static int [] POSITION_3 = new int[]{24,16,8,5,6,7,15,23};
-	private final static int [] POSITION_2 = new int[]{25,21,13,9,14,18};
-	private final static int [] POSITION_1 = new int[]{22,17,14};
+	private final static List<Integer> KING_POSITIONS = Arrays.asList(new Integer[]{0,1,2,3,4,12,20,11,19,27,28,29,30,31});
+	private final static List<Integer> POSITION_3 = Arrays.asList(new Integer[]{24,16,8,5,6,7,15,23});
+	private final static List<Integer> POSITION_2 = Arrays.asList(new Integer[]{25,21,13,9,10,18});
+	private final static List<Integer> POSITION_1 = Arrays.asList(new Integer[]{22,17,14});
 	/**
 	 * Simple heuristic function for 2DTicTacToe which counts the
 	 * number of different symbols on the board and favors the player
@@ -30,7 +31,6 @@ public class Heuristics {
 	 */
 	public static int evaluate(GameState state){
 		int score = 0;
-		
 		// check end of game
 		if(state.isEOG()){
 			if(state.isRedWin()){
@@ -38,7 +38,7 @@ public class Heuristics {
 			} else if(state.isWhiteWin()){
 				return -1000;
 			} else {
-				return 0;
+				return 50;
 			}
 		}
 		score += countPieces(state);
@@ -46,7 +46,7 @@ public class Heuristics {
 	}
 	
 	// just counts number of pieces
-	private static int countPieces(GameState state){
+	public static int countPieces(GameState state){
 		int score = 0;
 
 		// evaluate number of pieces
@@ -59,14 +59,12 @@ public class Heuristics {
 				if(current == Constants.CELL_KING){
 					red += 2;
 				}
-				// evaluate position
 				red += checkPosition(i);
 			}else if(current == Constants.CELL_WHITE){
 				white += 1;
 				if(current == Constants.CELL_KING){
 					white += 2;
 				}
-				// evaluate positions
 				white += checkPosition(i);
 			}
 		}
@@ -74,15 +72,16 @@ public class Heuristics {
 		return score;
 	}
 	
-	private static int checkPosition(int piece){
+	public static int checkPosition(int piece){
 		int score = 0;
-		if(Arrays.asList(KING_POSITIONS).contains(piece)){
-			score = 4;
-		} else if(Arrays.asList(POSITION_3).contains(piece)){
+		
+		if(KING_POSITIONS.contains(piece)){
+			score = 40;
+		} else if(POSITION_3.contains(piece)){
 			score = 3;
-		} else if(Arrays.asList(POSITION_2).contains(piece)){
+		} else if(POSITION_2.contains(piece)){
 			score = 2;
-		} else if(Arrays.asList(POSITION_1).contains(piece)){
+		} else if(POSITION_1.contains(piece)){
 			score = 1;
 		}
 		return score;
