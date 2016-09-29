@@ -2,6 +2,8 @@ package checkers;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import com.sun.corba.se.impl.javax.rmi.CORBA.Util;
+
 /**
  * TODO: Repeated state chaching
  * TODO: Symmetry breaking
@@ -30,14 +32,15 @@ public class Player {
 		stateCache = new HashMap<>();
         for (int i = 0; i < lNextStates.size(); i++){
         	// just use states so far if timelimit close
-        	if(TimeUnit.NANOSECONDS.toMillis(pDue.timeUntil())<100){
+        	if(TimeUnit.NANOSECONDS.toMillis(pDue.timeUntil())<500){
         		break;
         	}
-        	values[i] = minimax(lNextStates.elementAt(i), Integer.MIN_VALUE, Integer.MAX_VALUE, 8);
+        	System.err.println(Helper.getDepth(lNextStates.elementAt(i)));
+        	values[i] = minimax(lNextStates.elementAt(i), Integer.MIN_VALUE, Integer.MAX_VALUE, Helper.getDepth(lNextStates.elementAt(i)));
         }
 
         // return next best move -> move with max heuristic value
-        return lNextStates.elementAt(Util.getMaxIndex(values));
+        return lNextStates.elementAt(Helper.getMaxIndex(values));
     }
     
     /**

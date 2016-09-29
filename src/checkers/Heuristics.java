@@ -16,13 +16,13 @@ import java.util.Arrays;
  *        0  1  2  3  4  5  6  7
  */
 public class Heuristics {
-	private final static int [] KING_POSITIONS = new int[]{0,1,2,3,4,12,20,28,11,19,27,28,29,30,31};
+	private final static int [] KING_POSITIONS = new int[]{0,1,2,3,4,12,20,11,19,27,28,29,30,31};
 	private final static int [] POSITION_3 = new int[]{24,16,8,5,6,7,15,23};
 	private final static int [] POSITION_2 = new int[]{25,21,13,9,14,18};
 	private final static int [] POSITION_1 = new int[]{22,17,14};
 	/**
-	 * Simple heuristic function fpr 2DTicTacToe which counts the
-	 * number of different symbols and the board and favors the player
+	 * Simple heuristic function for 2DTicTacToe which counts the
+	 * number of different symbols on the board and favors the player
 	 * having more advantagous symbols.
 	 * 
 	 * @param state Current gameState
