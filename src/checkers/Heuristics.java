@@ -42,6 +42,7 @@ public class Heuristics {
 			}
 		}
 		score += countPieces(state);
+		score += checkLastMove(state);
 		return score;
 	}
 	
@@ -86,4 +87,24 @@ public class Heuristics {
 		}
 		return score;
 	}
+	
+	public static int checkLastMove(GameState state){
+		int score = 0;
+		if(state.getMove().getType() == 1){
+			score += 5;
+		}else if(state.getMove().getType() == 2){
+			score += 20;
+		}else if(state.getMove().getType() == 3){
+			score += 40;
+		}else if(state.getMove().getType() == 4){
+			score += 70;
+		}else if(state.getMove().getType() == 5){
+			score += 100;
+		}else if(state.getMove().getType() > 5){
+			score += 200;
+		}
+		return score;
+	}
 }
+
+
