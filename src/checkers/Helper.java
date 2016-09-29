@@ -1,4 +1,4 @@
-package checkers;
+//package checkers;
 import java.util.Vector;
 
 public class Helper {

@@ -1,4 +1,4 @@
-package checkers;
+//package checkers;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,11 +34,11 @@ public class Heuristics {
 		// check end of game
 		if(state.isEOG()){
 			if(state.isRedWin()){
-				return 1000;
-			} else if(state.isWhiteWin()){
 				return -1000;
+			} else if(state.isWhiteWin()){
+				return 1000;
 			} else {
-				return 50;
+				return 0;
 			}
 		}
 		score += countPieces(state);
@@ -57,18 +57,18 @@ public class Heuristics {
 			if(current == Constants.CELL_RED){
 				red += 1;
 				if(current == Constants.CELL_KING){
-					red += 2;
+					red += 5;
 				}
 				red += checkPosition(i);
 			}else if(current == Constants.CELL_WHITE){
 				white += 1;
 				if(current == Constants.CELL_KING){
-					white += 2;
+					white += 5;
 				}
 				white += checkPosition(i);
 			}
 		}
-		score = red - white;
+		score = white - red;
 		return score;
 	}
 	
@@ -78,7 +78,7 @@ public class Heuristics {
 		if(KING_POSITIONS.contains(piece)){
 			score = 40;
 		} else if(POSITION_3.contains(piece)){
-			score = 3;
+			score = 5;
 		} else if(POSITION_2.contains(piece)){
 			score = 2;
 		} else if(POSITION_1.contains(piece)){
