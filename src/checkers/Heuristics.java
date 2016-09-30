@@ -1,4 +1,4 @@
-//package checkers;
+package checkers;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class Heuristics {
 	 * number of different symbols on the board and favors the player
 	 * having more advantagous symbols.
 	 * 
-	 * @param state Current gameState
+	 * @param state Current gameStateo
 	 * @return value representing the evaluation of that state
 	 */
 	public static int evaluate(GameState state){
@@ -38,11 +38,11 @@ public class Heuristics {
 			} else if(state.isWhiteWin()){
 				return 1000;
 			} else {
-				return 50;
+				return 250;
 			}
 		}
-		score += countPieces(state);
-		score += checkLastMove(state);
+		score = countPieces(state);
+		//score += checkLastMove(state);
 		return score;
 	}
 	
@@ -55,53 +55,44 @@ public class Heuristics {
 		int white = 0;
 		for(int i=0; i<GameState.NUMBER_OF_SQUARES; i++){
 			int current = state.get(i);
-			if(current == Constants.CELL_RED){
-				red += 2;
-				if(current == Constants.CELL_KING){
-					red += 5;
-				}
-				//red += checkPosition(i);
-			}else if(current == Constants.CELL_WHITE){
-				white += 2;
-				if(current == Constants.CELL_KING){
-					white += 5;
-				}
-				//white += checkPosition(i);
+			if(0 != (current & Constants.CELL_RED)){
+				red += evaluatePosition(i);
+			}else if(0 != (current & Constants.CELL_WHITE)){
+				white += evaluatePosition(i);
 			}
 		}
 		score = white - red;
 		return score;
 	}
 	
-	public static int checkPosition(int piece){
+	private static int evaluatePosition(int piece){
 		int score = 0;
-		
 		if(KING_POSITIONS.contains(piece)){
-			score = 4;
+			score = 25;
 		} else if(POSITION_3.contains(piece)){
-			score = 3;
+			score = 20;
 		} else if(POSITION_2.contains(piece)){
-			score = 2;
+			score = 15;
 		} else if(POSITION_1.contains(piece)){
-			score = 1;
+			score = 10;
 		}
 		return score;
 	}
 	
-	public static int checkLastMove(GameState state){
+	private static int checkLastMove(GameState state){
 		int score = 0;
 		if(state.getMove().getType() == 1){
-			score += 5;
+			score += 15;
 		}else if(state.getMove().getType() == 2){
 			score += 20;
 		}else if(state.getMove().getType() == 3){
-			score += 40;
+			score += 35;
 		}else if(state.getMove().getType() == 4){
-			score += 70;
+			score += 40;
 		}else if(state.getMove().getType() == 5){
-			score += 100;
+			score += 55;
 		}else if(state.getMove().getType() > 5){
-			score += 200;
+			score += 60;
 		}
 		return score;
 	}

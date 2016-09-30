@@ -1,4 +1,4 @@
-//package checkers;
+package checkers;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 /**
@@ -28,12 +28,14 @@ public class Player {
         }
 
 		int[] values = new int[lNextStates.size()];
-        for (int i = 0; i < lNextStates.size(); i++){
+		this.maxPlayer = lNextStates.get(0).getNextPlayer()==Constants.CELL_WHITE ? Constants.CELL_RED : Constants.CELL_WHITE;
+		Collections.reverse(lNextStates);
+		for (int i = 0; i < lNextStates.size(); i++){
         	// just use states so far if timelimit close
-        	if(TimeUnit.NANOSECONDS.toMillis(pDue.timeUntil())<150){
+        	if(TimeUnit.NANOSECONDS.toMillis(pDue.timeUntil())<20){
         		break;
         	}
-        	values[i] = minimax(lNextStates.elementAt(i), Integer.MIN_VALUE, Integer.MAX_VALUE, maxDepth);
+        	values[i] = minimax(lNextStates.elementAt(i), Integer.MIN_VALUE, Integer.MAX_VALUE, maxDepth, pDue);
         }
 
         // return next best move -> move with max heuristic value
@@ -51,17 +53,12 @@ public class Player {
      * @param dead time deadline for evaluation
      * @return evaluation for current state
      */
-	private int minimax (GameState state, int alpha, int beta, int depth){
-		// check who to maximize for
-		if(depth == maxDepth){
-			this.maxPlayer = state.getNextPlayer()==Constants.CELL_WHITE ? Constants.CELL_RED : Constants.CELL_WHITE;
-		}
-		
+	private int minimax (GameState state, int alpha, int beta, int depth, Deadline pDue){
 		// current player
 		boolean isMax = state.getNextPlayer()==this.maxPlayer ? true : false;
 		
 		//recursion termination: recursion depth | end of game (leaf) 
-		if(depth == 0 || state.isEOG()){ 
+		if(depth == 0 || state.isEOG() || TimeUnit.NANOSECONDS.toMillis(pDue.timeUntil())<20){ 
 			if(this.maxPlayer == Constants.CELL_RED){
 				return Heuristics.evaluate(state)*-1;
 			}
@@ -75,10 +72,10 @@ public class Player {
 		Vector<GameState> orderedMoves = orderMoves(nextStates, isMax); // move ordering for earlier pruning
 		for(GameState child : orderedMoves) {
 			if(isMax){ //our turn (max)
-				bestPossible = Math.max(bestPossible, minimax(child, alpha, beta, depth - 1));
+				bestPossible = Math.max(bestPossible, minimax(child, alpha, beta, depth - 1, pDue));
 				alpha = Math.max(alpha, bestPossible);				
 			} else { // opponents turn (min)
-				bestPossible = Math.min(bestPossible, minimax(child, alpha, beta, depth - 1));
+				bestPossible = Math.min(bestPossible, minimax(child, alpha, beta, depth - 1, pDue));
 				beta = Math.min(beta, bestPossible);
 			}
 			if(beta <= alpha){ // alpha beta pruning

@@ -21,10 +21,10 @@ public class MyTest {
 		//GameState state8 = new GameState("44444333322442133124422333344444");
 		GameState state = new GameState("rrrrrrrrrrrr........wwwwwwwwwwww -1 r 50");
 		//GameState state2 = new GameState("rrrrrrrr..rr......rrwwwwwwwrrrrr -1 r 50");
-		//GameState state3 = new GameState("wwwww......ww.r..r.ww......wwwww -1 r 50");
+		GameState state3 = new GameState("wwwww......ww.r..r.ww......wwwww -1 r 50");
 		//System.out.println(Heuristics.evaluate(state) + " expected 0");
 		//System.out.println(Heuristics.evaluate(state2) + " expected -30");
-		//System.out.println(Heuristics.evaluate(state3) + " expeted 36");
+		//System.out.println(Heuristics.evaluate(state2) + " expeted 36");
 		Player p = new Player();
 		Deadline deadline = new Deadline(Deadline.getCpuTime() + (long) 1e9);
 		System.out.println(p.play(state, deadline).toMessage());
