@@ -1,4 +1,4 @@
-package checkers;
+//package checkers;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 /**
@@ -68,6 +68,7 @@ public class Player {
 		//find beste possible next best move
 		Vector<GameState> nextStates = new Vector<GameState>();
 		state.findPossibleMoves(nextStates);
+		
 		int bestPossible = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
 		Vector<GameState> orderedMoves = orderMoves(nextStates, isMax); // move ordering for earlier pruning
 		for(GameState child : orderedMoves) {

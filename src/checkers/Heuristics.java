@@ -1,4 +1,4 @@
-package checkers;
+//package checkers;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class Heuristics {
 			} else if(state.isWhiteWin()){
 				return 1000;
 			} else {
-				return 250;
+				return 0;
 			}
 		}
 		score = countPieces(state);
@@ -57,8 +57,14 @@ public class Heuristics {
 			int current = state.get(i);
 			if(0 != (current & Constants.CELL_RED)){
 				red += evaluatePosition(i);
+				if(0 != (current & Constants.CELL_KING)){
+					red += 1;
+				}
 			}else if(0 != (current & Constants.CELL_WHITE)){
 				white += evaluatePosition(i);
+				if(0 != (current & Constants.CELL_KING)){
+					white += 40;
+				}
 			}
 		}
 		score = white - red;
